@@ -1,118 +1,118 @@
-# Linear Algebra Lab 1
+# Лабораторная работа 1 по линейной алгебре
 
-C++ project for comparing several methods for solving systems of linear equations:
+Проект на C++, в котором сравниваются несколько методов решения систем линейных алгебраических уравнений:
 
-- Gaussian elimination without pivoting
-- Gaussian elimination with partial pivoting
-- LU decomposition
+- метод Гаусса без выбора главного элемента
+- метод Гаусса с частичным выбором главного элемента
+- LU-разложение
 
-The repository also includes helpers for matrix/vector generation and three experiment scenarios for performance and numerical-stability analysis.
+Также в проекте есть генерация матриц и векторов, а также набор вычислительных экспериментов для сравнения скорости работы и численной устойчивости методов.
 
-## Files
+## Структура проекта
 
-- `matrix.h`, `matrix.cpp` - matrix and vector creation helpers, random generators, Hilbert matrix generation
-- `gauss_default.h`, `gauss_default.cpp` - Gaussian elimination without pivoting
-- `gauss_advanced.h`, `gauss_advanced.cpp` - Gaussian elimination with partial pivoting
-- `LU_decomposition.h`, `LU_decomposition.cpp` - LU decomposition and forward/back substitution
-- `tests.h`, `tests.cpp` - experiment runner with three test scenarios
+- `matrix.h`, `matrix.cpp` — создание матриц и векторов, генерация случайных данных, построение матрицы Гильберта
+- `gauss_default.h`, `gauss_default.cpp` — метод Гаусса без выбора главного элемента
+- `gauss_advanced.h`, `gauss_advanced.cpp` — метод Гаусса с частичным выбором главного элемента
+- `LU_decomposition.h`, `LU_decomposition.cpp` — LU-разложение, прямая и обратная подстановка
+- `tests.h`, `tests.cpp` — запуск вычислительных тестов
 
-## Mathematical Background
+## Математическая основа
 
-The code uses zero-based indices internally, but the formulas below are written in the standard one-based mathematical form.
+В коде используются индексы с нуля, но ниже формулы записаны в стандартной математической нумерации с единицы.
 
-### 1. Gaussian Elimination Without Pivoting
+### 1. Метод Гаусса без выбора главного элемента
 
-For elimination step $k = 1, 2, \dots, n - 1$, the multiplier is
+На шаге исключения с номером `k` множитель вычисляется по формуле:
 
-$$
+```math
 m_{ik} = \frac{A_{ik}}{A_{kk}}, \qquad i = k + 1, \dots, n.
-$$
+```
 
-Then the matrix row and right-hand side are updated as
+Затем элементы матрицы и правой части пересчитываются:
 
-$$
+```math
 A_{ij} \leftarrow A_{ij} - m_{ik} A_{kj}, \qquad j = k, k + 1, \dots, n,
-$$
+```
 
-$$
+```math
 b_i \leftarrow b_i - m_{ik} b_k.
-$$
+```
 
-After forward elimination, the upper-triangular system is solved by back substitution:
+После прямого хода решение верхнетреугольной системы находится обратной подстановкой:
 
-$$
+```math
 x_i = \frac{b_i - \sum_{j = i + 1}^{n} U_{ij} x_j}{U_{ii}}, \qquad i = n, n - 1, \dots, 1.
-$$
+```
 
-### 2. Gaussian Elimination With Partial Pivoting
+### 2. Метод Гаусса с частичным выбором главного элемента
 
-At each step, the pivot row is chosen by
+На каждом шаге выбирается строка с максимальным по модулю элементом в текущем столбце:
 
-$$
+```math
 p = \arg \max_{r = k, \dots, n} |A_{rk}|.
-$$
+```
 
-Then rows $k$ and $p$ are swapped in both $A$ and $b$, after which the same elimination formulas are applied:
+После перестановки строк `k` и `p` в матрице `A` и векторе `b` применяются те же формулы исключения:
 
-$$
+```math
 m_{ik} = \frac{A_{ik}}{A_{kk}}, \qquad
 A_{ij} \leftarrow A_{ij} - m_{ik} A_{kj}, \qquad
 b_i \leftarrow b_i - m_{ik} b_k.
-$$
+```
 
-### 3. LU Decomposition
+### 3. LU-разложение
 
-The matrix is factorized into
+Матрица раскладывается в произведение
 
-$$
+```math
 A = LU,
-$$
+```
 
-where $L$ is lower triangular and $U$ is upper triangular.
+где `L` — нижнетреугольная матрица, а `U` — верхнетреугольная.
 
-The coefficients of $U$ are computed by
+Элементы матрицы `U` вычисляются по формуле:
 
-$$
+```math
 U_{ik} = A_{ik} - \sum_{j = 1}^{i - 1} L_{ij} U_{jk}, \qquad k \ge i.
-$$
+```
 
-The coefficients of $L$ are computed by
+Элементы матрицы `L` вычисляются по формуле:
 
-$$
+```math
 L_{ki} = \frac{A_{ki} - \sum_{j = 1}^{i - 1} L_{kj} U_{ji}}{U_{ii}}, \qquad k > i.
-$$
+```
 
-### 4. Forward and Back Substitution
+### 4. Прямая и обратная подстановка
 
-For the lower-triangular system $Ly = b$:
+Для нижнетреугольной системы `Ly = b` используется прямая подстановка:
 
-$$
+```math
 y_i = \frac{b_i - \sum_{j = 1}^{i - 1} L_{ij} y_j}{L_{ii}}, \qquad i = 1, \dots, n.
-$$
+```
 
-For the upper-triangular system $Ux = y$:
+Для верхнетреугольной системы `Ux = y` используется обратная подстановка:
 
-$$
+```math
 x_i = \frac{y_i - \sum_{j = i + 1}^{n} U_{ij} x_j}{U_{ii}}, \qquad i = n, n - 1, \dots, 1.
-$$
+```
 
-### 5. Auxiliary Formulas Used in the Experiments
+### 5. Формулы, используемые в экспериментах
 
-Euclidean norm of a vector:
+Евклидова норма вектора:
 
-$$
+```math
 \|v\|_2 = \sqrt{\sum_{i = 1}^{n} v_i^2}.
-$$
+```
 
-Componentwise vector difference:
+Разность двух векторов:
 
-$$
+```math
 (v_1 - v_2)_i = v_{1i} - v_{2i}, \qquad i = 1, 2, \dots, n.
-$$
+```
 
-Relative error of the computed solution $\tilde{x}$ with respect to the exact solution $x$:
+Относительная погрешность найденного решения `\tilde{x}` по сравнению с точным решением `x`:
 
-$$
+```math
 \varepsilon_{\mathrm{rel}} =
 \frac{\|\tilde{x} - x\|_2}{\|x\|_2}
 =
@@ -120,11 +120,11 @@ $$
 \frac{\sum_{i = 1}^{n} (\tilde{x}_i - x_i)^2}
 {\sum_{i = 1}^{n} x_i^2}
 }.
-$$
+```
 
-Residual norm:
+Невязка:
 
-$$
+```math
 \rho = \|A \tilde{x} - b\|_2
 =
 \sqrt{
@@ -133,78 +133,78 @@ $$
 \sum_{j = 1}^{n} a_{ij} \tilde{x}_j - b_i
 \right)^2
 }.
-$$
+```
 
-## Test Parameters
+## Таблицы тестовых параметров
 
-The tables below contain the exact test inputs used in `tests.cpp`.
+Ниже приведены именно те входные данные, которые используются в `tests.cpp`.
 
-### Test 1: Runtime Comparison for Different Matrix Sizes
+### Тест 1. Сравнение времени работы для разных размеров матрицы
 
-Random matrices are generated in the range $[-1, 1]$. A matrix is retried up to `MAX_ATTEMPTS = 100` times until LU decomposition succeeds.
+Случайные матрицы генерируются в диапазоне `[-1, 1]`. Если разложение LU не удается, матрица генерируется заново. Максимальное число попыток — `MAX_ATTEMPTS = 100`.
 
-| Matrix size `n` | Right-hand side `b` | Methods compared | Measured values |
+| Размер матрицы `n` | Правая часть `b` | Сравниваемые методы | Измеряемая величина |
 | --- | --- | --- | --- |
-| 100 | random vector in `[-1, 1]` | Gauss with pivot, Gauss without pivot, LU | execution time |
-| 200 | random vector in `[-1, 1]` | Gauss with pivot, Gauss without pivot, LU | execution time |
-| 500 | random vector in `[-1, 1]` | Gauss with pivot, Gauss without pivot, LU | execution time |
-| 1000 | random vector in `[-1, 1]` | Gauss with pivot, Gauss without pivot, LU | execution time |
+| 100 | случайный вектор из `[-1, 1]` | Гаусс с выбором, Гаусс без выбора, LU | время выполнения |
+| 200 | случайный вектор из `[-1, 1]` | Гаусс с выбором, Гаусс без выбора, LU | время выполнения |
+| 500 | случайный вектор из `[-1, 1]` | Гаусс с выбором, Гаусс без выбора, LU | время выполнения |
+| 1000 | случайный вектор из `[-1, 1]` | Гаусс с выбором, Гаусс без выбора, LU | время выполнения |
 
-### Test 2: Repeated Solves for the Same Matrix
+### Тест 2. Повторное решение для одной и той же матрицы
 
-For this experiment, one random matrix of size $n = 500$ is reused, and the number of different right-hand sides varies.
+В этом эксперименте используется одна случайная матрица размера `n = 500`, а меняется только количество различных правых частей.
 
-| Matrix size `n` | Number of RHS vectors `k` | RHS generation | Methods compared | Measured values |
+| Размер матрицы `n` | Количество векторов `k` | Генерация правых частей | Сравниваемые методы | Измеряемая величина |
 | --- | --- | --- | --- | --- |
-| 500 | 1 | random vectors in `[-1, 1]` | Gauss with pivot, LU | total execution time |
-| 500 | 10 | random vectors in `[-1, 1]` | Gauss with pivot, LU | total execution time |
-| 500 | 100 | random vectors in `[-1, 1]` | Gauss with pivot, LU | total execution time |
+| 500 | 1 | случайные векторы из `[-1, 1]` | Гаусс с выбором, LU | суммарное время |
+| 500 | 10 | случайные векторы из `[-1, 1]` | Гаусс с выбором, LU | суммарное время |
+| 500 | 100 | случайные векторы из `[-1, 1]` | Гаусс с выбором, LU | суммарное время |
 
-### Test 3: Numerical Stability on Hilbert Matrices
+### Тест 3. Численная устойчивость на матрицах Гильберта
 
-For each Hilbert matrix $G$, the exact solution is chosen as
+Для каждой матрицы Гильберта `G` в качестве точного решения выбирается вектор
 
-$$
+```math
 x_{\mathrm{exact}} = (1, 1, \dots, 1)^T,
-$$
+```
 
-and the right-hand side is built as
+а правая часть строится по формуле
 
-$$
+```math
 b = G x_{\mathrm{exact}}.
-$$
+```
 
-| Matrix type | Matrix size `n` | Exact solution | Methods compared | Measured values |
+| Тип матрицы | Размер `n` | Точное решение | Сравниваемые методы | Измеряемые величины |
 | --- | --- | --- | --- | --- |
-| Hilbert | 5 | all ones | Gauss without pivot, Gauss with pivot, LU | relative error, residual |
-| Hilbert | 10 | all ones | Gauss without pivot, Gauss with pivot, LU | relative error, residual |
-| Hilbert | 15 | all ones | Gauss without pivot, Gauss with pivot, LU | relative error, residual |
+| Гильберта | 5 | вектор из единиц | Гаусс без выбора, Гаусс с выбором, LU | относительная погрешность, невязка |
+| Гильберта | 10 | вектор из единиц | Гаусс без выбора, Гаусс с выбором, LU | относительная погрешность, невязка |
+| Гильберта | 15 | вектор из единиц | Гаусс без выбора, Гаусс с выбором, LU | относительная погрешность, невязка |
 
-## Build
+## Сборка
 
-The project uses CMake and requires a C++17 compiler.
+Проект использует CMake и требует компилятор с поддержкой C++17.
 
 ```powershell
 cmake -S . -B build
 cmake --build build
 ```
 
-## Run
+## Запуск
 
-After building, run:
+После сборки запустить программу можно так:
 
 ```powershell
 .\build\Debug\linal_lab1.exe
 ```
 
-On single-config generators such as MinGW Makefiles or Ninja, the executable will usually be located at:
+Для одноконфигурационных генераторов вроде MinGW Makefiles или Ninja исполняемый файл обычно находится здесь:
 
 ```powershell
 .\build\linal_lab1.exe
 ```
 
-## Notes
+## Примечания
 
-- Random matrix and vector generation uses a fixed seed for reproducibility.
-- Singular or near-singular matrices throw exceptions.
-- `tests.cpp` acts as the main executable for the project rather than a unit-test suite.
+- Для генерации случайных данных используется фиксированное зерно, чтобы результаты были воспроизводимыми.
+- Для вырожденных и почти вырожденных матриц выбрасываются исключения.
+- Файл `tests.cpp` в этом проекте выступает как основная исполняемая программа, а не как unit-тесты в классическом смысле.
